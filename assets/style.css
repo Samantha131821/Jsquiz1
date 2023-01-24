@@ -1,0 +1,14 @@
+.start-page {
+    text-align: center;    
+    padding-top: 40px;
+}
+
+button {
+    background-color: rgb(133, 185, 185);
+    border-radius: 10px;
+}
+
+button:hover {
+    background-color: grey;
+    color: white;
+}
