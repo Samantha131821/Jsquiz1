@@ -1,32 +1,185 @@
+
+
+var questionContent = [
+    question1 = {
+        question: "What is JavaScript?", 
+        answersArray: [
+            "JavaScript is a scripting language used to make the website interactive.", 
+            "Javascript is an assembly language used to make the website interactive.", 
+            "JavaScript is a compiled language used to make the website interactive.", 
+            "None of the mentioned."
+        ],
+        correctAnswer:"JavaScript is a scripting language used to make the website interactive."
+
+    },
+    question2 = {
+        question: "JavaScript code can be written in ___.", 
+        answersArray: [
+            "Javascript file (.js file)",
+            "HTML document directly", 
+            "JavaScript and in HTML document directly",
+            "In style sheets (.css file)"
+        ],
+        correctAnswer:"JavaScript and in HTML document directly"
+    
+
+    },
+    question3 = {
+        question: "Which JavaScript method is used to access HTML elements by id?", 
+        answersArray: [
+            "getElementByID()",
+            "getElement(id)",
+            "getElementByID(id)",
+            "elementById(id)"
+        ],
+        correctAnswer:"getElementByID(id)"
+
+    },
+]
+
+var highScore = [];
+var timeEl = document.querySelector("#time");
+
 var startButton = document.querySelector(".start-button");
-var secondsLeft= 60;
-var timeEl = document.querySelector(".time");
 
-function startTimer() {
-    startButton.addEventListener("click", startTimer);
-    var timerInterval = setInterval(function() {
-        secondsLeft--;
-        timeEl.textContent = secondsLeft + "Seconds Left."
+var startPage = document.getElementById('startPage')
+var questionPage = document.getElementById('questionPage')
+var initialPage = document.getElementById('initialPage')
 
-        if (secondsLeft === 0) {
-            //Times Up! and goto next screen enter initals on score page.
-            clearInterval(timerInterval);
-            //recordScore();
+var questions = document.getElementById('questions')
+var answers = document.getElementById('answers')
+
+var displayScore = document.getElementById('finalScore')
+var initialInput = document.getElementById('initialInput')
+
+var isQuiz = false;
+var finalScore = 0;
+var secondsLeft= 30;
+var numberCorrect;
+var numberIncorrect;
+var questionIndex;
+var questionArrayOrder;
+
+var pageArray = [startPage, questionPage, initialPage]
+
+function hidePages(){
+    for (let i = 0; i < pageArray.length; i++) {
+        if(!pageArray[i].classList.contains('hide')){
+            pageArray[i].classList.add('hide')
         }
-    },60000);    
+        
+    }
 }
 
-//function recordScore() {
-    //States final score
-    //Enter Initals- submit 
-    //See high scores
+function questionOrder(arr){
+    let arrIndex=[]
+    for (let i = 0; i < arr.length; i++) {
+     arrIndex.push(i)    
+    }
+
+    return shuffleArray(arrIndex)
+}
+
+
+function shuffleArray(arr){
+    return arr.sort(() => Math.random() - .5)
+}
+
+startButton.addEventListener("click", (startTimer));
+
+function startTimer(event) {
+    var timerInterval = setInterval(function() {
+        secondsLeft--;
+        timeEl.textContent = secondsLeft + " Seconds Left";
+        
+        if(secondsLeft === 0) {
+            clearInterval(timerInterval);
+            finalPage();
+        }
+    }, 1000);    
+    hidePages()
+    questionPage.classList.remove('hide')
+
+    numberCorrect = 0
+    numberIncorrect = 0;
+    questionIndex = 0
+    isQuiz = true
+
+    questionArrayOrder = questionOrder(questionContent)
+
+    questionUpdater(questionContent, questionArrayOrder[questionIndex])
+}
+
+function questionUpdater(array, index){
+
+    questions.textContent = array[index].question;
+    let currentAnswerArray = shuffleArray(array[index].answersArray)
+    let ans;
+    let but;
+    
+    for (let i = 0; i < currentAnswerArray.length; i++) {
+        ans = document.createElement('LI')
+        but = document.createElement('button')
+       
+        ans.appendChild(but)
+        but.textContent = currentAnswerArray[i]
+
+        ans.addEventListener('click', questionController)
+        answers.appendChild(ans)
     }
 
 
-//let userchoice = ""
-//let score = 0
 
-var displayQuestionOne = document.querySelector("question-one");
-document.querySelector(".start-button").addEventListener("click", displayQuestionOne);
+}
 
-[{question-one: "What is JavaScript?", answers: "A. JavaScript is a scripting language used to make the website interactive.", "B. Javascript is an assembly language used to make the website interactive.", "C. JavaScript is a compiled language used to make the website interactive.", "D. None of the mentioned."}]
+
+function questionController(event){
+    if(event.target.textContent.substring(3) === questionContent[questionArrayOrder[questionIndex]].correctAnswer){
+        secondsLeft+=5
+        numberCorrect++
+    }
+    else{
+        secondsLeft-=5;
+        numberIncorrect++
+    }
+    clearQuestion()
+    questionIndex++
+    if(questionIndex < questionContent.length){
+        questionUpdater(questionContent, questionArrayOrder[questionIndex])
+    }else{
+        finalScore = secondsLeft;
+        finalPage()
+    }
+
+}
+
+
+function clearQuestion(){
+    questions.textContent = ''
+    while(answers.hasChildNodes()){
+        answers.removeChild(answers.childNodes[0])
+    }
+
+}
+
+localStorage.setItem("highScore", 0)
+
+if (score > localStorage.getItem("highScore")) {
+    localStorage.setItem("highScore", score);
+}
+
+
+function finalPage(){
+    if(finalScore < 1){
+        finalScore = 0
+    }
+    displayScore.textContent = finalScore
+    hidePages() 
+    initialPage.classList.remove('hide')
+    isQuiz = false
+}
+
+function clearPage (event) {
+    document.getElementById('initalsButton').addEventListener('click', (clearPage));
+
+}
