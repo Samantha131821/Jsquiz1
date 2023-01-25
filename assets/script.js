@@ -37,7 +37,8 @@ var questionContent = [
     },
 ]
 
-var highScore = [];
+var submitButton = document.getElementById('initialsButton')
+
 var timeEl = document.querySelector("#time");
 
 var startButton = document.querySelector(".start-button");
@@ -50,7 +51,8 @@ var questions = document.getElementById('questions')
 var answers = document.getElementById('answers')
 
 var displayScore = document.getElementById('finalScore')
-var initialInput = document.getElementById('initialInput')
+var displayPreviouScore = document.getElementById('previousScore')
+var initialsInput = document.getElementById('initialsInput')
 
 var isQuiz = false;
 var finalScore = 0;
@@ -92,7 +94,8 @@ function startTimer(event) {
         secondsLeft--;
         timeEl.textContent = secondsLeft + " Seconds Left";
         
-        if(secondsLeft === 0) {
+        if(secondsLeft <= 0) {
+            timeEl.textContent = ""
             clearInterval(timerInterval);
             finalPage();
         }
@@ -134,21 +137,23 @@ function questionUpdater(array, index){
 
 
 function questionController(event){
-    if(event.target.textContent.substring(3) === questionContent[questionArrayOrder[questionIndex]].correctAnswer){
-        secondsLeft+=5
+    console.log(event.target.textContent);
+    console.log(questionContent[questionArrayOrder[questionIndex]].correctAnswer);
+    if(event.target.textContent === questionContent[questionArrayOrder[questionIndex]].correctAnswer){
+        secondsLeft+=5;
         numberCorrect++
-    }
-    else{
+    } else{
         secondsLeft-=5;
         numberIncorrect++
     }
     clearQuestion()
     questionIndex++
+
     if(questionIndex < questionContent.length){
         questionUpdater(questionContent, questionArrayOrder[questionIndex])
-    }else{
+    } else{
         finalScore = secondsLeft;
-        finalPage()
+        secondsLeft = 0
     }
 
 }
@@ -162,24 +167,35 @@ function clearQuestion(){
 
 }
 
-localStorage.setItem("highScore", 0)
-
-if (score > localStorage.getItem("highScore")) {
-    localStorage.setItem("highScore", score);
-}
-
 
 function finalPage(){
     if(finalScore < 1){
         finalScore = 0
     }
+    var previousScore = localStorage.getItem('highScore')
+    displayPreviouScore.textContent = previousScore
+
+//to do:load and display previous initials
+
+
     displayScore.textContent = finalScore
     hidePages() 
     initialPage.classList.remove('hide')
     isQuiz = false
 }
+console.log(submitButton)
+submitButton.addEventListener('click', (sendMessage));
 
-function clearPage (event) {
-    document.getElementById('initalsButton').addEventListener('click', (clearPage));
 
+function sendMessage() {
+    //to do: check for initials
+    //to do: save initials if saving highscore
+    var previousScore = localStorage.getItem('highScore')
+    var userInitials = localStorage.getItem('initialsInput')
+    if (finalScore > previousScore) {
+        localStorage.setItem('highScore', finalScore)
+        localStorage.setItem('initialsinput', userInitials)
+        }
+
+    window.confirm("Score Submitted!")
 }

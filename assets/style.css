@@ -24,6 +24,7 @@ button:hover {
 .time {
     position: relative;
     top: -100px;
+    left: 400px;
     color: red;
 }
 
